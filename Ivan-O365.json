@@ -20,7 +20,7 @@
             "properties": {
                 "galleries": [
                     {
-                        "name": "Ivan-Workbook",
+                        "name": "FromGithub-Workbook",
                         "category": "Snoop Dog",
                         "order": 100,
                         "type": "workbook",
