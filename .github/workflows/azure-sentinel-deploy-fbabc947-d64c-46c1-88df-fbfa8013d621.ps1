@@ -20,6 +20,7 @@ $githubAuthToken = $Env:githubAuthToken
 $githubRepository = $Env:GITHUB_REPOSITORY
 $branchName = $Env:branch
 $smartDeployment = $Env:smartDeployment
+$newResourceBranch = $branchName + "-sentinel-deployment"
 $csvPath = "$rootDirectory\.sentinel\tracking_table_$sourceControlId.csv"
 $configPath = "$rootDirectory\sentinel-deployment.config"
 $global:localCsvTablefinal = @{}
@@ -113,19 +114,13 @@ function GetGithubTree {
     return $getTreeResponse
 }
 
-#Gets blob commit sha of the csv file, used when updating csv file to repo 
-function GetCsvCommitSha($getTreeResponse) {
-    $relativeCsvPath = RelativePathWithBackslash $csvPath
-    $shaObject = $getTreeResponse.tree | Where-Object { $_.path -eq $relativeCsvPath }
-    return $shaObject.sha
-}
-
 #Creates a table using the reponse from the tree api, creates a table 
 function GetCommitShaTable($getTreeResponse) {
     $shaTable = @{}
+    $supportedExtensions = @(".json", ".bicep", ".bicepparam");
     $getTreeResponse.tree | ForEach-Object {
         $truePath = AbsolutePathWithSlash $_.path
-        if (([System.IO.Path]::GetExtension($_.path) -eq ".json") -or ($truePath -eq $configPath))
+        if ((([System.IO.Path]::GetExtension($_.path) -in $supportedExtensions)) -or ($truePath -eq $configPath))
         {
             $shaTable.Add($truePath, $_.sha)
         }
@@ -133,28 +128,26 @@ function GetCommitShaTable($getTreeResponse) {
     return $shaTable
 }
 
-#Pushes new/updated csv file to the user's repository. If updating file, will need csv commit sha. 
-function PushCsvToRepo($getTreeResponse) {
-    $relativeCsvPath = RelativePathWithBackslash $csvPath
-    $sha = GetCsvCommitSha $getTreeResponse
-    $createFileUrl = "https://api.github.com/repos/$githubRepository/contents/$relativeCsvPath"
+function PushCsvToRepo() {
     $content = ConvertTableToString
-    $encodedContent = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($content))
-    
-    $body = @{
-        message = "trackingTable.csv created."
-        content = $encodedContent
-        branch = $branchName
-        sha = $sha
-    } | ConvertTo-Json
+    $relativeCsvPath = RelativePathWithBackslash $csvPath
+    $resourceBranchExists = git ls-remote --heads "https://github.com/$githubRepository" $newResourceBranch | wc -l 
 
-    $Parameters = @{
-        Method      = "PUT"
-        Uri         = $createFileUrl
-        Headers     = $header
-        Body        = $body | ConvertTo-Json
+    if ($resourceBranchExists -eq 0) {
+        git switch --orphan $newResourceBranch
+        git commit --allow-empty -m "Initial commit on orphan branch"
+        git push -u origin $newResourceBranch
+        New-Item -ItemType "directory" -Path ".sentinel"
+    } else {
+        git fetch > $null
+        git checkout $newResourceBranch
     }
-    AttemptInvokeRestMethod "Put" $createFileUrl $body $null 3
+    
+    Write-Output $content > $relativeCsvPath
+    git add $relativeCsvPath
+    git commit -m "Modified tracking table"
+    git push -u origin $newResourceBranch
+    git checkout $branchName
 }
 
 function ReadCsvToTable {
@@ -224,12 +217,17 @@ function ConnectAzCloud {
     Clear-AzContext -Scope Process;
     Clear-AzContext -Scope CurrentUser -Force -ErrorAction SilentlyContinue;
     
-    Add-AzEnvironment `
+    if ($CloudEnv -ne 'AzureChinaCloud' -and $CloudEnv -ne 'AzureUSGovernment') 
+    {
+        Write-Output "Attempting Adding new cloud";
+
+        Add-AzEnvironment `
         -Name $CloudEnv `
         -ActiveDirectoryEndpoint $RawCreds.activeDirectoryEndpointUrl `
         -ResourceManagerEndpoint $RawCreds.resourceManagerEndpointUrl `
         -ActiveDirectoryServiceEndpointResourceId $RawCreds.activeDirectoryServiceEndpointResourceId `
         -GraphEndpoint $RawCreds.graphEndpointUrl | out-null;
+    }
 
     $servicePrincipalKey = ConvertTo-SecureString $RawCreds.clientSecret.replace("'", "''") -AsPlainText -Force
     $psCredential = New-Object System.Management.Automation.PSCredential($RawCreds.clientId, $servicePrincipalKey)
@@ -287,13 +285,22 @@ function ToContentKind($contentKinds, $resource, $templateObject) {
     return $null
 }
 
-function IsValidTemplate($path, $templateObject) {
+function IsValidTemplate($path, $templateObject, $parameterFile) {
     Try {
         if (DoesContainWorkspaceParam $templateObject) {
-            Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path -workspace $WorkspaceName
+            if ($parameterFile) {
+                Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path -TemplateParameterFile $parameterFile -workspace $WorkspaceName
+            }
+            else {
+                Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path -workspace $WorkspaceName
+            }
         }
         else {
-            Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path
+            if ($parameterFile) {
+                Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path -TemplateParameterFile $parameterFile
+            } else {
+                Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path
+            }
         }
 
         return $true
@@ -336,8 +343,9 @@ function DoesContainWorkspaceParam($templateObject) {
 function AttemptDeployment($path, $parameterFile, $deploymentName, $templateObject) {
     Write-Host "[Info] Deploying $path with deployment name $deploymentName"
 
-    $isValid = IsValidTemplate $path $templateObject
+    $isValid = IsValidTemplate $path $templateObject $parameterFile
     if (-not $isValid) {
+        Write-Host "[Error] Not deploying $path since the template is not valid"
         return $false
     }
     $isSuccess = $false
@@ -438,7 +446,7 @@ function LoadDeploymentConfig() {
 
 function filterContentFile($fullPath) {
 	$temp = RelativePathWithBackslash $fullPath
-	return $global:excludeContentFiles | ? {$temp.StartsWith($_, 'CurrentCultureIgnoreCase')}
+	return $global:excludeContentFiles | Where-Object {$temp.StartsWith($_, 'CurrentCultureIgnoreCase')}
 }
 
 function RelativePathWithBackslash($absolutePath) {
@@ -451,8 +459,12 @@ function AbsolutePathWithSlash($relativePath) {
 
 #resolve parameter file name, return $null if there is none.
 function GetParameterFile($path) {
+    if ($path.Length -eq 0) {
+        return $null
+    }
+    
     $index = RelativePathWithBackslash $path
-    $key = ($global:parameterFileMapping.Keys | ? { $_ -eq $index })
+    $key = ($global:parameterFileMapping.Keys | Where-Object { $_ -eq $index })
     if ($key) {
         $mappedParameterFile = AbsolutePathWithSlash $global:parameterFileMapping[$key]
         if (Test-Path $mappedParameterFile) {
@@ -460,18 +472,41 @@ function GetParameterFile($path) {
         }
     }
 
-    $parameterFilePrefix = $path.TrimEnd(".json")
+    $extension = [System.IO.Path]::GetExtension($path)
+    if ($extension -ne ".json" -and $extension -ne ".bicep") {
+        return $null
+    }
+
+    $parameterFilePrefix = $path.Substring(0, $path.Length - $extension.Length)
+
+    # Check for workspace-specific parameter file
+    if ($extension -eq ".bicep") {
+        $workspaceParameterFile = $parameterFilePrefix + "-$WorkspaceId.bicepparam"
+        if (Test-Path $workspaceParameterFile) {
+            return $workspaceParameterFile
+        }
+    }
     
     $workspaceParameterFile = $parameterFilePrefix + ".parameters-$WorkspaceId.json"
     if (Test-Path $workspaceParameterFile) {
         return $workspaceParameterFile
     }
-    
+
+    # Check for parameter file
+    if ($extension -eq ".bicep") {
+        $defaultParameterFile = $parameterFilePrefix + ".bicepparam"
+        Write-Host "Default parameter file: $defaultParameterFile"
+        if (Test-Path $defaultParameterFile) {
+            return $defaultParameterFile
+        }
+    }
+
     $defaultParameterFile = $parameterFilePrefix + ".parameters.json"
+    Write-Host "Default parameter file: $defaultParameterFile"
     if (Test-Path $defaultParameterFile) {
         return $defaultParameterFile
     }
-    
+
     return $null
 }
 
@@ -483,7 +518,7 @@ function Deployment($fullDeploymentFlag, $remoteShaTable, $tree) {
         $totalFailed = 0;
 	      $iterationList = @()
         $global:prioritizedContentFiles | ForEach-Object  { $iterationList += (AbsolutePathWithSlash $_) }
-        Get-ChildItem -Path $Directory -Recurse -Filter *.json -exclude *metadata.json, *.parameters*.json |
+        Get-ChildItem -Path $Directory -Recurse -Include *.bicep, *.json -exclude *metadata.json, *.parameters*.json, *.bicepparam, bicepconfig.json |
                         Where-Object { $null -eq ( filterContentFile $_.FullName ) } |
                         Select-Object -Property FullName |
                         ForEach-Object { $iterationList += $_.FullName }
@@ -494,7 +529,13 @@ function Deployment($fullDeploymentFlag, $remoteShaTable, $tree) {
                 Write-Host "[Warning] Skipping deployment for $path. The file doesn't exist."
                 return
             }
-            $templateObject = Get-Content $path | Out-String | ConvertFrom-Json
+            
+            if ($path -like "*.bicep") {
+                $templateObject = bicep build $path --stdout | Out-String | ConvertFrom-Json
+            } else {
+                $templateObject = Get-Content $path | Out-String | ConvertFrom-Json
+            }
+
             if (-not (IsValidResourceType $templateObject))
             {
                 Write-Host "[Warning] Skipping deployment for $path. The file contains resources for content that was not selected for deployment. Please add content type to connection if you want this file to be deployed."
@@ -515,7 +556,7 @@ function Deployment($fullDeploymentFlag, $remoteShaTable, $tree) {
                 }
             }
         }
-        PushCsvToRepo $tree
+        PushCsvToRepo
         if ($totalFiles -gt 0 -and $totalFailed -gt 0) 
         {
             $err = "$totalFailed of $totalFiles deployments failed."
@@ -557,30 +598,53 @@ function SmartDeployment($fullDeploymentFlag, $remoteShaTable, $path, $parameter
     }
 }
 
+function TryGetCsvFile {
+    if (Test-Path $csvPath) {
+        $global:localCsvTablefinal = ReadCsvToTable
+        Remove-Item -Path $csvPath
+        git add $csvPath
+        git commit -m "Removed tracking file and moved to new sentinel created branch"
+        git push origin $branchName
+    }
+
+    $relativeCsvPath = RelativePathWithBackslash $csvPath
+    $resourceBranchExists = git ls-remote --heads "https://github.com/$githubRepository" $newResourceBranch | wc -l 
+    
+    if ($resourceBranchExists -eq 1) {
+        git fetch > $null
+        git checkout $newResourceBranch
+        
+        if (Test-Path $relativeCsvPath) {
+            $global:localCsvTablefinal = ReadCsvToTable
+        }
+        git checkout $branchName
+    }
+}
+
 function main() {
+    git config --global user.email "donotreply@microsoft.com"
+    git config --global user.name "Sentinel"
+
     if ($CloudEnv -ne 'AzureCloud') 
     {
         Write-Output "Attempting Sign In to Azure Cloud"
         ConnectAzCloud
     }
 
-    if (Test-Path $csvPath) {
-        $global:localCsvTablefinal = ReadCsvToTable
-    }
-
+    TryGetCsvFile
     LoadDeploymentConfig
-
     $tree = GetGithubTree
     $remoteShaTable = GetCommitShaTable $tree
 
     $existingConfigSha = $global:localCsvTablefinal[$configPath]
     $remoteConfigSha = $remoteShaTable[$configPath]
     $modifiedConfig = ($existingConfigSha -xor $remoteConfigSha) -or ($existingConfigSha -and $remoteConfigSha -and ($existingConfigSha -ne $remoteConfigSha))
+    
     if ($remoteConfigSha) {
         $global:updatedCsvTable[$configPath] = $remoteConfigSha
     }
 
-    $fullDeploymentFlag = $modifiedConfig -or (-not (Test-Path $csvPath)) -or ($smartDeployment -eq "false")
+    $fullDeploymentFlag = $modifiedConfig -or ($smartDeployment -eq "false")
     Deployment $fullDeploymentFlag $remoteShaTable $tree
 }
 
