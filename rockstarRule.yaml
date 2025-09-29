@@ -41,6 +41,7 @@ query: |
   | where ActivityCountByCallerIPAddress >= alertOperationThreshold
   ) on CallerIpAddress, Caller, OperationNameValue
   | extend Name = tostring(split(Caller,'@',0)[0]), UPNSuffix = tostring(split(Caller,'@',1)[0])
+  //this is a comment
 entityMappings:
   - entityType: Account
     fieldMappings:
