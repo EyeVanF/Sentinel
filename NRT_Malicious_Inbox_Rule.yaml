@@ -1,5 +1,5 @@
 id: b79f6190-d104-4691-b7db-823e05980895
-name: NRT Malicious Inbox Rule
+name: NRT Malicious Inbox Rule 3
 description: |
   'Often times after the initial compromise the attackers create inbox rules to delete emails that contain certain keywords.
    This is done so as to limit ability to warn compromised users that they've been compromised. Below is a sample query that tries to detect this.
