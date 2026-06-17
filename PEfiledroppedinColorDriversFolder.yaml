@@ -1,7 +1,7 @@
 id: f68a5046-b7eb-4f69-9519-1e99708bb9e0
 name:  PE file dropped in Color Profile Folder
 description: |
-  'This query looks for writes of PE files to C:\Windows\System32\spool\drivers\color\.
+  'This query looks for writes of PE files to C:\Windows\System32\spool\drivers\color\   Ivan Farias.
     This is a common directory used by malware, as well as some legitimate programs, and writes of PE files to the folder should be monitored.
     Ref: https://www.microsoft.com/security/blog/2022/07/27/untangling-knotweed-european-private-sector-offensive-actor-using-0-day-exploits/'
 severity: Medium
