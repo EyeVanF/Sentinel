@@ -2,8 +2,8 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "metadata": {
-        "title": "Block IP in Exchange On-Prem",
-        "description": "This Playbook will block the IP in on-premises Exchange Server.",
+        "title": "Block IP in Exchange On-Premises",
+        "description": "Github - This Playbook will block the IP in on-premises Exchange Server.",
         "prerequisites": "Existing Automation Account with a Hybrid Worker with Connection to Exchange Server. Automation account should be in same RG as Azure Sentinel.",
         "lastUpdateTime": "2021-07-12T10:00:15.123Z",
         "entities": [],
