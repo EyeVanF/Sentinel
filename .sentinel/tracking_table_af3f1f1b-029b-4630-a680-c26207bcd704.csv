@@ -1,5 +1,6 @@
 FileName, CommitSha
-AnalyticsRules/rare-subscription-level-operations.json,1348a22e97d18cc08f1add0820cb8e5bfbeabee5
-Azure_Sentinel_analytic_rule (2).json,63520b8f55c92b8bb49641593e5805eb9a2fd3db
 AnalyticsRules/pe-file-dropped-in-color-profile-folder.json,86a90d1a80ac6834b5fe18f1bdd7c5eb37f29e11
+AnalyticsRules/malicious-inbox-rule.json,5ae16e0b28d1c870d2af503229f55b01e41957be
+Azure_Sentinel_analytic_rule (2).json,63520b8f55c92b8bb49641593e5805eb9a2fd3db
+AnalyticsRules/rare-subscription-level-operations.json,1348a22e97d18cc08f1add0820cb8e5bfbeabee5
 
