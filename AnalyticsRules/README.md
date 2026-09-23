@@ -12,11 +12,13 @@ The YAML files in the repository root are source definitions only. The generated
 
 | Template | Kind |
 |---|---|
-| `nrt-malicious-inbox-rule.json` | NRT |
+| `malicious-inbox-rule.json` | Scheduled (5-minute frequency) |
 | `pe-file-dropped-in-color-profile-folder.json` | Scheduled |
 | `rare-subscription-level-operations.json` | Scheduled |
 
 Each template uses the same rule ID as its corresponding YAML source. Deploying a changed template therefore updates the existing Sentinel rule instead of creating a duplicate.
+
+The malicious inbox rule is deployed as a five-minute Scheduled rule because the Sentinel repository ARM deployment API used by this connection rejects the `NRT` resource kind.
 
 ## Making changes
 
