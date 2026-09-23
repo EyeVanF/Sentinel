@@ -1,0 +1,74 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspace": {
+      "type": "string",
+      "metadata": {
+        "description": "Microsoft Sentinel Log Analytics workspace name."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+      "apiVersion": "2024-03-01",
+      "name": "[format('{0}/Microsoft.SecurityInsights/{1}', parameters('workspace'), 'f68a5046-b7eb-4f69-9519-1e99708bb9e0')]",
+      "kind": "Scheduled",
+      "properties": {
+        "displayName": "PE file dropped in Color Profile Folder - GitHub",
+        "description": "Detects executable or DLL files written to the Windows color profile folder. Malware and some legitimate applications use this directory, so executable file writes should be investigated.",
+        "severity": "Medium",
+        "enabled": true,
+        "query": "DeviceFileEvents\n| where ActionType =~ \"FileCreated\"\n| where FolderPath has \"C:\\\\Windows\\\\System32\\\\spool\\\\drivers\\\\color\\\\\"\n| where FileName endswith \".exe\" or FileName endswith \".dll\"",
+        "queryFrequency": "P1D",
+        "queryPeriod": "P1D",
+        "triggerOperator": "GreaterThan",
+        "triggerThreshold": 0,
+        "suppressionDuration": "PT5H",
+        "suppressionEnabled": false,
+        "tactics": [
+          "Execution"
+        ],
+        "techniques": [
+          "T1203"
+        ],
+        "entityMappings": [
+          {
+            "entityType": "File",
+            "fieldMappings": [
+              {
+                "identifier": "Name",
+                "columnName": "FileName"
+              }
+            ]
+          },
+          {
+            "entityType": "Host",
+            "fieldMappings": [
+              {
+                "identifier": "HostName",
+                "columnName": "DeviceName"
+              }
+            ]
+          }
+        ],
+        "incidentConfiguration": {
+          "createIncident": true,
+          "groupingConfiguration": {
+            "enabled": false,
+            "reopenClosedIncident": false,
+            "lookbackDuration": "PT5H",
+            "matchingMethod": "AllEntities",
+            "groupByEntities": [],
+            "groupByAlertDetails": [],
+            "groupByCustomDetails": []
+          }
+        },
+        "eventGroupingSettings": {
+          "aggregationKind": "SingleAlert"
+        }
+      }
+    }
+  ]
+}
