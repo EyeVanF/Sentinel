@@ -16,7 +16,7 @@
       "name": "[format('{0}/Microsoft.SecurityInsights/{1}', parameters('workspace'), 'f68a5046-b7eb-4f69-9519-1e99708bb9e0')]",
       "kind": "Scheduled",
       "properties": {
-        "displayName": "PE file dropped in Color Profile Folder - GitHub",
+        "displayName": "Github PE file dropped in Color Profile Folder - GitHub",
         "description": "Detects executable or DLL files written to the Windows color profile folder. Malware and some legitimate applications use this directory, so executable file writes should be investigated.",
         "severity": "Medium",
         "enabled": true,
