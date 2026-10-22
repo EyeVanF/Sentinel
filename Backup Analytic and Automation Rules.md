@@ -114,7 +114,7 @@ Saved 42 analytics rules and 6 automation rules to: <absolute output path>
 ### Inspect the backup
 
 ```powershell
-$backup = Get-Content -LiteralPath ".\Sentinel-Rules-Backup.json" -Raw |
+$backup = Get-Content -LiteralPath "Sentinel-Rules-Backup.json" -Raw |
     ConvertFrom-Json -Depth 100
 
 $backup.counts
