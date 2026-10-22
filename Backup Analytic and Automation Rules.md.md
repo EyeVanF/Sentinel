@@ -61,7 +61,7 @@ az login
     -SubscriptionId "00000000-0000-0000-0000-000000000000" `
     -WorkspaceResourceGroup "rg-sentinel" `
     -WorkspaceName "law-sentinel" `
-    -OutputPath ".\Sentinel-Rules-Backup.json"
+    -OutputPath "Sentinel-Rules-Backup.json"
 ```
 
 `WorkspaceResourceGroup` must be the resource group containing the Log Analytics workspace on which Sentinel is enabled. `WorkspaceName` is that workspace's name, not a separate Sentinel resource name.
