@@ -1,21 +1,6 @@
-# KQL queries by deck, on the four network tables
+# KQL queries
 
-Companion to **01-KQL.pptx** and **02-KQL.pptx**. Every topic that has a query in those decks appears here **in slide order**,
-with **three examples** that run on the four tables loaded in the lab workspace and nothing else:
-
-| Table | What it holds |
-|---|---|
-| `Palo_FW_CL` | Palo Alto firewall traffic and threat logs |
-| `Infoblox_DNS_CL` | Infoblox DNS queries, failures and zone events |
-| `Infoblox_DHCP_CL` | Infoblox DHCP requests, leases and acknowledgements |
-| `Netscaler_Logs_CL` | NetScaler session, HTTP and appliance events |
-
-**Coverage:** 168 topics, 504 queries. Each query was executed against the workspace and returns without errors.
-Slide numbers refer to each deck (`01` = 01-KQL.pptx, `02` = 02-KQL.pptx).
-
-## Notes before you present
-
-- **Original tables replaced.** The slides use `SecurityEvent`, `Heartbeat`, `Perf`, `SigninLogs`, `CommonSecurityLog` and similar; they are replaced here by the four tables above. Where a slide's example relies on a column the network tables do not have (for example JSON properties), a close equivalent is built with `bag_pack()` / `make_list()`.
+- **Original tables replaced.** The slidesuse `SecurityEvent`, `Heartbeat`, `Perf`, `SigninLogs`, `CommonSecurityLog` and similar; they are replaced here by the four tables above. Where a slide's example relies on a column the network tables do not have (for example JSON properties), a close equivalent is built with `bag_pack()` / `make_list()`.
 - **Time windows.** The lab data is a **static sample from 2026-11-16 (UTC)**. Examples use `ago(30d)` so they return rows for a month after the load; `ago(1h)` or `ago(1d)` will return nothing once the sample is older than that. If a query returns no rows, widen the window or use an exact one:
 
 ```kusto
