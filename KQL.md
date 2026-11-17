@@ -1,4 +1,4 @@
-# Foundational KQL - Network Workshop
+# Foundational KQL - Workshop
 
 Instructor copy/paste companion for **Foundational KQL for Network Operations**.
 Sections follow the PowerPoint in the **same order**; each heading shows its slide number.
