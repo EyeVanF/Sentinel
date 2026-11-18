@@ -14,26 +14,6 @@
 - **Charts:** `render` examples return the table and draw the chart in the portal's Chart view. The lab sample spans seconds to minutes, so bins are 1s to 1m.
 - **Lab dataset only:** IPs, hostnames and domains come from the customer sample. Do not share the file outside the engagement without sanitizing.
 
-## Contents
-
-- **Part 1 · 01-KQL.pptx (Log Analytics workshop)**
-  - 1. Log Analytics interface and demonstration (slides 40, 72–80)
-  - 2. Kusto Queries 101 (slides 41–64)
-- **Part 2 · 02-KQL.pptx (Using KQL)**
-  - 3. Filtering with KQL (slides 5–10)
-  - 4. Analyzing with KQL (slides 11–19)
-  - 5. Presenting with KQL (slides 20–23)
-  - 6. Advanced KQL operations (slides 24–33)
-  - 7. Optimizing queries (slides 34–45)
-
----
-
-## Part 1 · 01-KQL.pptx (Log Analytics workshop)
-
-
-### 1. Log Analytics interface and demonstration (slides 40, 72–80)
-
-#### 1.1 Run a simple query and adjust the time range
 
 *01-KQL.pptx · slide 40, 80* — Time range from the picker, hard-coded with ago(), or an exact window.
 
