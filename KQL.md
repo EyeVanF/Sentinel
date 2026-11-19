@@ -1,6 +1,6 @@
 # KQL queries
 
-- **Original tables replaced.** The slidesuse `SecurityEvent`, `Heartbeat`, `Perf`, `SigninLogs`, `CommonSecurityLog` and similar; they are replaced here by the four tables above. Where a slide's example relies on a column the network tables do not have (for example JSON properties), a close equivalent is built with `bag_pack()` / `make_list()`.
+- **Original tables replaced.** The original examples use `SecurityEvent`, `Heartbeat`, `Perf`, `SigninLogs`, `CommonSecurityLog` and similar; they are replaced here by the four tables above. Where an original example relies on a column the network tables do not have (for example JSON properties), a close equivalent is built with `bag_pack()` / `make_list()`.
 - **Time windows.** The lab data is a **static sample from 2026-11-16 (UTC)**. Examples use `ago(30d)` so they return rows for a month after the load; `ago(1h)` or `ago(1d)` will return nothing once the sample is older than that. If a query returns no rows, widen the window or use an exact one:
 
 ```kusto
@@ -9,13 +9,13 @@
 
 - **search and union stay scoped.** `search *` and `union *` would read every table in the workspace, so the examples use `search in (...)`, explicit table lists or the prefixes `Infoblox_*`, `Palo*` and `Netscaler*`, which resolve only to your tables.
 - **Cross-workspace** examples (`workspace(...)`) point at the same lab workspace (MSLearn-Sentinel) so they still use only these tables.
-- **`externaldata` and `adx()`** (slide 61 of 01) read data outside Log Analytics. `externaldata` is demonstrated with `datatable`, the inline equivalent; `adx()` has no equivalent on these tables and is not repeated.
-- **Slides without a query** (agenda, structure, Log Analytics concepts, the data lake and retention material in 01, the module overview and section slides in 02) are not listed.
+- **`externaldata` and `adx()`** read data outside Log Analytics. `externaldata` is demonstrated with `datatable`, the inline equivalent; `adx()` has no equivalent on these tables and is not repeated.
+- **Topics without a runnable example.** Agenda, structure, Log Analytics concepts, the data lake and retention material in part 1, and the module/section overviews in part 2, are not listed.
 - **Charts:** `render` examples return the table and draw the chart in the portal's Chart view. The lab sample spans seconds to minutes, so bins are 1s to 1m.
 - **Lab dataset only:** IPs, hostnames and domains come from the customer sample. Do not share the file outside the engagement without sanitizing.
 
 
-*01-KQL.pptx · slide 40, 80* — Time range from the picker, hard-coded with ago(), or an exact window.
+Time range from the picker, hard-coded with ago(), or an exact window.
 
 **Example 1 · Simple query: the time range comes from the picker**
 
@@ -42,7 +42,7 @@ Infoblox_DNS_CL
 
 #### 1.2 Multiple tabs: one question per tab
 
-*01-KQL.pptx · slide 40, 73* — Open a separate tab for each query and compare results side by side.
+Open a separate tab for each query and compare results side by side.
 
 **Example 1 · Tab 1: what did the firewall block?**
 
@@ -70,7 +70,7 @@ Netscaler_Logs_CL
 
 #### 1.3 Schema view: find the right table and field
 
-*01-KQL.pptx · slide 40, 74, 76* — getschema returns every column and its type, the same information as the Tables pane.
+getschema returns every column and its type, the same information as the Tables pane.
 
 **Example 1 · All columns of a table**
 
@@ -98,7 +98,7 @@ Netscaler_Logs_CL
 
 #### 1.4 Row explorer: right-click to include or exclude a value
 
-*01-KQL.pptx · slide 40, 78, 80* — The right-click menu adds a where line; these are the equivalent hand-written filters.
+The right-click menu adds a where line; these are the equivalent hand-written filters.
 
 **Example 1 · Include a value (right-click, Include)**
 
@@ -124,7 +124,7 @@ Infoblox_DHCP_CL
 
 #### 1.5 Hard-code the UI choices in KQL: lookback, columns, grouping
 
-*01-KQL.pptx · slide 78* — Time range = where TimeGenerated, columns = project, Group columns = summarize.
+Time range = where TimeGenerated, columns = project, Group columns = summarize.
 
 **Example 1 · Lookback**
 
@@ -149,7 +149,7 @@ Netscaler_Logs_CL
 
 #### 1.6 Functions: saved queries recalled like a table
 
-*01-KQL.pptx · slide 76* — Save a query with an alias (Save as function) and call it by name. Shown here as let functions so they run anywhere.
+Save a query with an alias (Save as function) and call it by name. Shown here as let functions so they run anywhere.
 
 **Example 1 · A function without parameters**
 
@@ -188,7 +188,7 @@ GetDhcpHistory("10.216.132.166")
 
 #### 1.7 Built-in parsing: right-click, Extend column
 
-*01-KQL.pptx · slide 79* — The UI writes the parsing for you; these are the equivalent expressions on text columns.
+The UI writes the parsing for you; these are the equivalent expressions on text columns.
 
 **Example 1 · Split a text value into parts**
 
@@ -223,7 +223,7 @@ Netscaler_Logs_CL
 
 #### 1.8 UTC to local time conversion
 
-*01-KQL.pptx · slide 80* — TimeGenerated is UTC; convert it for display when you need local time.
+TimeGenerated is UTC; convert it for display when you need local time.
 
 **Example 1 · Mountain time**
 
@@ -253,11 +253,11 @@ Infoblox_DHCP_CL
 ```
 
 
-### 2. Kusto Queries 101 (slides 41–64)
+### 2. Kusto Queries 101
 
 #### 2.1 What is Kusto? Tabular, piped, read-only
 
-*01-KQL.pptx · slide 42* — A table name is already a query; each pipe adds a step; nothing is modified.
+A table name is already a query; each pipe adds a step; nothing is modified.
 
 **Example 1 · A table is a query**
 
@@ -285,7 +285,7 @@ Infoblox_DNS_CL
 
 #### 2.2 Understanding the pipeline
 
-*01-KQL.pptx · slide 43* — Each step only sees the output of the step before it: data, filter, analyze, present.
+Each step only sees the output of the step before it: data, filter, analyze, present.
 
 **Example 1 · Firewall: who has the most allowed sessions?**
 
@@ -316,7 +316,7 @@ Netscaler_Logs_CL
 
 #### 2.3 Query structure: table, pipe, filter, aggregate, order, project
 
-*01-KQL.pptx · slide 44* — The common closing project renames and limits the columns.
+The common closing project renames and limits the columns.
 
 **Example 1 · Firewall**
 
@@ -352,7 +352,7 @@ Infoblox_DHCP_CL
 
 #### 2.4 Query development process
 
-*01-KQL.pptx · slide 45* — Start with a question, find the table, explore, filter, shape, enrich, summarize.
+Start with a question, find the table, explore, filter, shape, enrich, summarize.
 
 **Example 1 · Question: which firewall rules block the most traffic?**
 
@@ -398,7 +398,7 @@ Infoblox_DHCP_CL
 
 #### 2.5 Syntax rules: pipes, case sensitivity, comments, strings and numbers
 
-*01-KQL.pptx · slide 46* — Pipe between stages, // for comments, quotes for strings, no quotes for numbers, semicolon only after let.
+Pipe between stages, // for comments, quotes for strings, no quotes for numbers, semicolon only after let.
 
 **Example 1 · Pipes, stacked lines and comments**
 
@@ -429,7 +429,7 @@ Palo_FW_CL
 
 #### 2.6 Discovery: search
 
-*01-KQL.pptx · slide 47* — search looks for a keyword in every column. Scoped here to the four network tables.
+search looks for a keyword in every column. Scoped here to the four network tables.
 
 **Example 1 · Keyword across all four tables**
 
@@ -454,7 +454,7 @@ Palo_FW_CL
 
 #### 2.7 Discovery: count
 
-*01-KQL.pptx · slide 47* — Total number of records.
+Total number of records.
 
 **Example 1 · All firewall records**
 
@@ -481,7 +481,7 @@ Netscaler_Logs_CL
 
 #### 2.8 Discovery: print
 
-*01-KQL.pptx · slide 47* — Verify a value or a function output; here the table is used to compute the value.
+Verify a value or a function output; here the table is used to compute the value.
 
 **Example 1 · Latest firewall event**
 
@@ -504,7 +504,7 @@ print FirstDhcpEvent = toscalar(Infoblox_DHCP_CL | summarize min(TimeGenerated))
 
 #### 2.9 Discovery: distinct
 
-*01-KQL.pptx · slide 47* — Return the distinct values of a column.
+Return the distinct values of a column.
 
 **Example 1 · Firewall actions**
 
@@ -529,7 +529,7 @@ Netscaler_Logs_CL
 
 #### 2.10 Discovery: take
 
-*01-KQL.pptx · slide 47* — Limit the number of results.
+Limit the number of results.
 
 **Example 1 · Ten firewall rows**
 
@@ -555,7 +555,7 @@ Netscaler_Logs_CL
 
 #### 2.11 Filtering with where: conditions can be concatenated
 
-*01-KQL.pptx · slide 48* — One where with and, or several where lines: same result.
+One where with and, or several where lines: same result.
 
 **Example 1 · Time only**
 
@@ -581,7 +581,7 @@ Palo_FW_CL
 
 #### 2.12 where: start with filtering by time (relative times)
 
-*01-KQL.pptx · slide 49* — ago() is relative to now. Units: s, m, h, d.
+ago() is relative to now. Units: s, m, h, d.
 
 **Example 1 · Last day (static sample: returns data only while it is under a day old)**
 
@@ -606,7 +606,7 @@ Infoblox_DHCP_CL
 
 #### 2.13 where: time filter and a condition combined with and
 
-*01-KQL.pptx · slide 49* — Comment the intent next to the condition.
+Comment the intent next to the condition.
 
 **Example 1 · Firewall: blocked traffic**
 
@@ -631,7 +631,7 @@ Infoblox_DHCP_CL
 
 #### 2.14 where: chained filters and case-insensitive match (=~)
 
-*01-KQL.pptx · slide 49* — Stack where lines; =~ ignores case.
+Stack where lines; =~ ignores case.
 
 **Example 1 · Firewall**
 
@@ -662,7 +662,7 @@ Netscaler_Logs_CL
 
 #### 2.15 where: lists with in (lists can be dynamic)
 
-*01-KQL.pptx · slide 49* — in matches any value of a list.
+in matches any value of a list.
 
 **Example 1 · Firewall actions**
 
@@ -687,7 +687,7 @@ Infoblox_DHCP_CL
 
 #### 2.16 where: additional built-in operator ipv4_is_match
 
-*01-KQL.pptx · slide 49* — Subnet matching with CIDR notation.
+Subnet matching with CIDR notation.
 
 **Example 1 · Firewall sources in 10.0.0.0/8**
 
@@ -713,7 +713,7 @@ Netscaler_Logs_CL
 
 #### 2.17 where: matches regex
 
-*01-KQL.pptx · slide 49* — Regular expressions for patterns a simple operator cannot express.
+Regular expressions for patterns a simple operator cannot express.
 
 **Example 1 · Firewall rule names ending in a number**
 
@@ -738,7 +738,7 @@ Infoblox_DHCP_CL
 
 #### 2.18 project: choose the columns
 
-*01-KQL.pptx · slide 50* — Only the listed columns are returned, in the order listed.
+Only the listed columns are returned, in the order listed.
 
 **Example 1 · Firewall**
 
@@ -763,7 +763,7 @@ Infoblox_DHCP_CL
 
 #### 2.19 project: rename columns
 
-*01-KQL.pptx · slide 50* — Name = Column renames while projecting.
+Name = Column renames while projecting.
 
 **Example 1 · Firewall**
 
@@ -788,7 +788,7 @@ Netscaler_Logs_CL
 
 #### 2.20 project examples: a calculated column with iff
 
-*01-KQL.pptx · slide 51* — An 'if' function similar to Excel's.
+An 'if' function similar to Excel's.
 
 **Example 1 · Firewall: is it blocked?**
 
@@ -814,7 +814,7 @@ Infoblox_DHCP_CL
 
 #### 2.21 project examples: where, then project
 
-*01-KQL.pptx · slide 51* — Filter first, then keep the columns you need.
+Filter first, then keep the columns you need.
 
 **Example 1 · Firewall DNS traffic**
 
@@ -842,7 +842,7 @@ Netscaler_Logs_CL
 
 #### 2.22 extend: build a string with strcat
 
-*01-KQL.pptx · slide 52* — extend creates new columns (enrichment, concatenation, parsing).
+extend creates new columns (enrichment, concatenation, parsing).
 
 **Example 1 · Firewall flow**
 
@@ -870,7 +870,7 @@ Netscaler_Logs_CL
 
 #### 2.23 extend: calculated columns
 
-*01-KQL.pptx · slide 52* — Arithmetic on numeric columns.
+Arithmetic on numeric columns.
 
 **Example 1 · Firewall total bytes**
 
@@ -899,7 +899,7 @@ Netscaler_Logs_CL
 
 #### 2.24 extend examples: arithmetic columns (FreeKB / FreeGB style)
 
-*01-KQL.pptx · slide 53* — Several extend lines build on each other.
+Several extend lines build on each other.
 
 **Example 1 · Firewall: KB and MB**
 
@@ -931,7 +931,7 @@ Palo_FW_CL
 
 #### 2.25 extend examples: extract a value
 
-*01-KQL.pptx · slide 53* — extract(regex, group, text) pulls a value out of a string.
+extract(regex, group, text) pulls a value out of a string.
 
 **Example 1 · NetScaler error number**
 
@@ -961,7 +961,7 @@ Palo_FW_CL
 
 #### 2.26 extend examples: split
 
-*01-KQL.pptx · slide 53* — split breaks a delimited value into an array.
+split breaks a delimited value into an array.
 
 **Example 1 · Firewall: first octet**
 
@@ -992,7 +992,7 @@ Infoblox_DHCP_CL
 
 #### 2.27 extend examples: parse
 
-*01-KQL.pptx · slide 53* — parse extracts values between fixed text.
+parse extracts values between fixed text.
 
 **Example 1 · NetScaler: session start**
 
@@ -1023,7 +1023,7 @@ Netscaler_Logs_CL
 
 #### 2.28 summarize: count records per entity
 
-*01-KQL.pptx · slide 54* — Group results and count.
+Group results and count.
 
 **Example 1 · Firewall: sessions per source**
 
@@ -1049,7 +1049,7 @@ Netscaler_Logs_CL
 
 #### 2.29 summarize: group by several columns
 
-*01-KQL.pptx · slide 54* — The output has one row per distinct combination.
+The output has one row per distinct combination.
 
 **Example 1 · Firewall: action and protocol**
 
@@ -1074,7 +1074,7 @@ Netscaler_Logs_CL
 
 #### 2.30 summarize with bin(): time series
 
-*01-KQL.pptx · slide 54* — Used with bin() to present time-series charts.
+Used with bin() to present time-series charts.
 
 **Example 1 · Firewall: events per 10 seconds**
 
@@ -1102,7 +1102,7 @@ Netscaler_Logs_CL
 
 #### 2.31 summarize with arg_max(): latest record per entity (health state)
 
-*01-KQL.pptx · slide 54* — arg_max(TimeGenerated, *) returns the whole latest row per group.
+arg_max(TimeGenerated, *) returns the whole latest row per group.
 
 **Example 1 · Firewall: last session per source**
 
@@ -1129,7 +1129,7 @@ Netscaler_Logs_CL
 
 #### 2.32 summarize with sort by
 
-*01-KQL.pptx · slide 54* — Sort by sets the order of the aggregated result.
+Sort by sets the order of the aggregated result.
 
 **Example 1 · Firewall: busiest sources**
 
@@ -1158,7 +1158,7 @@ Netscaler_Logs_CL
 
 #### 2.33 summarize examples: min() with a filter
 
-*01-KQL.pptx · slide 55* — Minimum of a numeric column or a time.
+Minimum of a numeric column or a time.
 
 **Example 1 · Firewall: smallest allowed session**
 
@@ -1185,7 +1185,7 @@ Infoblox_DNS_CL
 
 #### 2.34 summarize examples: count by two columns (logins by user and computer style)
 
-*01-KQL.pptx · slide 55* — Count by a pair of columns.
+Count by a pair of columns.
 
 **Example 1 · Firewall: source zone and destination zone**
 
@@ -1214,7 +1214,7 @@ Netscaler_Logs_CL
 
 #### 2.35 summarize examples: dcount() returns a single value
 
-*01-KQL.pptx · slide 55* — Count distinct values of the selected data set.
+Count distinct values of the selected data set.
 
 **Example 1 · Firewall: distinct sources with allowed traffic**
 
@@ -1242,7 +1242,7 @@ Netscaler_Logs_CL
 
 #### 2.36 summarize examples: the default column name (count_) and how to override it
 
-*01-KQL.pptx · slide 55* — Use c = count() to name the column.
+Use c = count() to name the column.
 
 **Example 1 · Default name: count_**
 
@@ -1267,7 +1267,7 @@ Infoblox_DHCP_CL
 
 #### 2.37 render timechart (with a title)
 
-*01-KQL.pptx · slide 56* — render must be the last operator.
+render must be the last operator.
 
 **Example 1 · Firewall**
 
@@ -1295,7 +1295,7 @@ Netscaler_Logs_CL
 
 #### 2.38 render piechart
 
-*01-KQL.pptx · slide 56* — Share of a whole across a category.
+Share of a whole across a category.
 
 **Example 1 · Firewall actions**
 
@@ -1324,7 +1324,7 @@ Netscaler_Logs_CL
 
 #### 2.39 Useful functions: ago()
 
-*01-KQL.pptx · slide 57* — ago() is the primary date-time selector.
+ago() is the primary date-time selector.
 
 **Example 1 · Firewall: last 30 days**
 
@@ -1349,7 +1349,7 @@ Infoblox_DHCP_CL
 
 #### 2.40 Useful functions: iff() / iif()
 
-*01-KQL.pptx · slide 57* — Classic if / then / else.
+Classic if / then / else.
 
 **Example 1 · Firewall**
 
@@ -1377,7 +1377,7 @@ Infoblox_DHCP_CL
 
 #### 2.41 Useful functions: case()
 
-*01-KQL.pptx · slide 57* — Like iff() with more branches.
+Like iff() with more branches.
 
 **Example 1 · Firewall**
 
@@ -1405,7 +1405,7 @@ Infoblox_DHCP_CL
 
 #### 2.42 Useful functions: parse_url()
 
-*01-KQL.pptx · slide 57* — Breaks a URL into its parts. The URL is built with strcat because the sample columns hold host and path separately.
+Breaks a URL into its parts. The URL is built with strcat because the sample columns hold host and path separately.
 
 **Example 1 · Firewall destination**
 
@@ -1439,7 +1439,7 @@ Infoblox_DNS_CL
 
 #### 2.43 Useful functions: split()
 
-*01-KQL.pptx · slide 57* — Breaks a delimited value into an array.
+Breaks a delimited value into an array.
 
 **Example 1 · DNS name labels**
 
@@ -1472,7 +1472,7 @@ Infoblox_DHCP_CL
 
 #### 2.44 Useful functions: strcat()
 
-*01-KQL.pptx · slide 57* — Combines values into a single string.
+Combines values into a single string.
 
 **Example 1 · Firewall endpoint**
 
@@ -1502,7 +1502,7 @@ Infoblox_DHCP_CL
 
 #### 2.45 Useful functions: parse
 
-*01-KQL.pptx · slide 57* — Extracts a value from a string.
+Extracts a value from a string.
 
 **Example 1 · NetScaler error and key**
 
@@ -1533,7 +1533,7 @@ Infoblox_DHCP_CL
 
 #### 2.46 Useful functions: series_decompose_anomalies() (anomaly detection against a baseline)
 
-*01-KQL.pptx · slide 57* — Build a time series with make-series, then flag points that deviate. The lab data spans seconds or minutes, so the step is small.
+Build a time series with make-series, then flag points that deviate. The lab data spans seconds or minutes, so the step is small.
 
 **Example 1 · DNS: queries per second**
 
@@ -1568,7 +1568,7 @@ Netscaler_Logs_CL
 
 #### 2.47 let: a single value
 
-*01-KQL.pptx · slide 58* — A temporary variable before a complex query.
+A temporary variable before a complex query.
 
 **Example 1 · Port**
 
@@ -1596,7 +1596,7 @@ Infoblox_DNS_CL
 
 #### 2.48 let: a list (allow, deny and exclusion lists)
 
-*01-KQL.pptx · slide 58* — Use dynamic arrays with in.
+Use dynamic arrays with in.
 
 **Example 1 · Blocked actions**
 
@@ -1624,7 +1624,7 @@ Infoblox_DHCP_CL
 
 #### 2.49 let: a temporary container for a table
 
-*01-KQL.pptx · slide 58* — Name a sub-result and reuse it.
+Name a sub-result and reuse it.
 
 **Example 1 · Firewall top talkers**
 
@@ -1663,7 +1663,7 @@ Infoblox_DHCP_CL
 
 #### 2.50 let examples: a table 'view' that is the result of a query
 
-*01-KQL.pptx · slide 59* — Note the semicolon at the end of the let statement.
+Note the semicolon at the end of the let statement.
 
 **Example 1 · Firewall sources with little activity**
 
@@ -1698,7 +1698,7 @@ LowActivityClients
 
 #### 2.51 let examples: time offset and a value to discard
 
-*01-KQL.pptx · slide 59* — Variables keep the query readable.
+Variables keep the query readable.
 
 **Example 1 · Firewall**
 
@@ -1732,7 +1732,7 @@ Netscaler_Logs_CL
 
 #### 2.52 let examples: a static table with datatable used as a list
 
-*01-KQL.pptx · slide 59* — A one-column table can be used as a list.
+A one-column table can be used as a list.
 
 **Example 1 · Firewall: applications to watch**
 
@@ -1760,7 +1760,7 @@ Infoblox_DHCP_CL
 
 #### 2.53 union: stack tables
 
-*01-KQL.pptx · slide 60* — Union merges tables; results are stacked, with no comparison between values.
+Union merges tables; results are stacked, with no comparison between values.
 
 **Example 1 · All four tables with the source name**
 
@@ -1787,7 +1787,7 @@ union withsource = SourceTable Infoblox_*
 
 #### 2.54 join: compare two tables on a matching column
 
-*01-KQL.pptx · slide 60* — join compares two tables and returns the matches.
+join compares two tables and returns the matches.
 
 **Example 1 · Firewall sources that also queried DNS**
 
@@ -1821,7 +1821,7 @@ Netscaler_Logs_CL
 
 #### 2.55 Cross-workspace queries: workspace()
 
-*01-KQL.pptx · slide 61* — Reference another (or the same) workspace by name, ID or full resource path. These point at the workspace that holds the four tables.
+Reference another (or the same) workspace by name, ID or full resource path. These point at the workspace that holds the four tables.
 
 **Example 1 · By workspace name**
 
@@ -1846,7 +1846,7 @@ workspace("/subscriptions/616d9435-845f-4701-ba0c-a6e8709c89a3/resourcegroups/az
 
 #### 2.56 External data: lookup data that is not in a table (externaldata stand-in)
 
-*01-KQL.pptx · slide 61* — externaldata reads a CSV from blob storage, which is outside the four tables. These examples use datatable, the inline equivalent, so they stay on your tables. adx() (query an Azure Data Explorer cluster) is not applicable here.
+externaldata reads a CSV from blob storage, which is outside the four tables. These examples use datatable, the inline equivalent, so they stay on your tables. adx() (query an Azure Data Explorer cluster) is not applicable here.
 
 **Example 1 · Zone to owner lookup joined to the firewall**
 
@@ -1877,7 +1877,7 @@ Netscaler_Logs_CL
 
 #### 2.57 Most used commands: end-to-end examples
 
-*01-KQL.pptx · slide 62* — where, project, extend, summarize, take, let, ago, render, join, iff and split in one query.
+where, project, extend, summarize, take, let, ago, render, join, iff and split in one query.
 
 **Example 1 · Blocked firewall traffic by rule**
 
@@ -1913,7 +1913,7 @@ Infoblox_DNS_CL
 
 #### 2.58 Filter: == (best performance)
 
-*01-KQL.pptx · slide 63* — Equality is the best operator.
+Equality is the best operator.
 
 **Example 1 · Firewall action**
 
@@ -1941,7 +1941,7 @@ Netscaler_Logs_CL
 
 #### 2.59 Filter: has
 
-*01-KQL.pptx · slide 63* — Prefer has or startswith; case does not matter.
+Prefer has or startswith; case does not matter.
 
 **Example 1 · Firewall rule**
 
@@ -1969,7 +1969,7 @@ Netscaler_Logs_CL
 
 #### 2.60 Filter: has_cs
 
-*01-KQL.pptx · slide 63* — Case-sensitive version of has.
+Case-sensitive version of has.
 
 **Example 1 · Firewall rule**
 
@@ -1997,7 +1997,7 @@ Infoblox_DHCP_CL
 
 #### 2.61 Filter: startswith
 
-*01-KQL.pptx · slide 63* — Prefix match.
+Prefix match.
 
 **Example 1 · Firewall rule**
 
@@ -2025,7 +2025,7 @@ Infoblox_DHCP_CL
 
 #### 2.62 Filter: contains (avoid unless needed)
 
-*01-KQL.pptx · slide 63* — Substring anywhere; slower than has.
+Substring anywhere; slower than has.
 
 **Example 1 · Firewall rule**
 
@@ -2053,7 +2053,7 @@ Netscaler_Logs_CL
 
 #### 2.63 Filter: contains_cs
 
-*01-KQL.pptx · slide 63* — Case-sensitive substring.
+Case-sensitive substring.
 
 **Example 1 · Firewall rule**
 
@@ -2081,7 +2081,7 @@ Infoblox_DHCP_CL
 
 #### 2.64 Filter: endswith (avoid unless needed)
 
-*01-KQL.pptx · slide 63* — Suffix match.
+Suffix match.
 
 **Example 1 · Firewall rule**
 
@@ -2109,7 +2109,7 @@ Infoblox_DHCP_CL
 
 #### 2.65 Filter: matches regex (simple pattern)
 
-*01-KQL.pptx · slide 63* — A simple regular expression behaves like contains.
+A simple regular expression behaves like contains.
 
 **Example 1 · Firewall rule**
 
@@ -2137,7 +2137,7 @@ Netscaler_Logs_CL
 
 #### 2.66 Filter: matches regex (digit pattern)
 
-*01-KQL.pptx · slide 63* — More complex patterns cost more.
+More complex patterns cost more.
 
 **Example 1 · Firewall rule digits**
 
@@ -2165,7 +2165,7 @@ Netscaler_Logs_CL
 
 #### 2.67 Filter: search (multi-field matching is expensive)
 
-*01-KQL.pptx · slide 63* — search looks in every column; scoped here to one table.
+search looks in every column; scoped here to one table.
 
 **Example 1 · Firewall**
 
@@ -2193,7 +2193,7 @@ Netscaler_Logs_CL
 
 #### 2.68 Filter: * has (multi-field matching)
 
-*01-KQL.pptx · slide 63* — Same cost profile as search.
+Same cost profile as search.
 
 **Example 1 · Firewall**
 
@@ -2221,7 +2221,7 @@ Infoblox_DHCP_CL
 
 #### 2.69 SQL vs KQL: select all data from a table
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT * FROM Palo_FW_CL`
+SQL: `SELECT * FROM Palo_FW_CL`
 
 **Example 1 · Firewall**
 
@@ -2243,7 +2243,7 @@ Infoblox_DHCP_CL
 
 #### 2.70 SQL vs KQL: select specific columns
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT SrcIP, DestIP FROM Palo_FW_CL`
+SQL: `SELECT SrcIP, DestIP FROM Palo_FW_CL`
 
 **Example 1 · Firewall**
 
@@ -2268,7 +2268,7 @@ Netscaler_Logs_CL
 
 #### 2.71 SQL vs KQL: select 100 records (TOP 100)
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT TOP 100 * FROM Palo_FW_CL`
+SQL: `SELECT TOP 100 * FROM Palo_FW_CL`
 
 **Example 1 · Firewall**
 
@@ -2293,7 +2293,7 @@ Netscaler_Logs_CL
 
 #### 2.72 SQL vs KQL: null evaluation
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT * FROM Palo_FW_CL WHERE BytesOut IS NOT NULL`
+SQL: `SELECT * FROM Palo_FW_CL WHERE BytesOut IS NOT NULL`
 
 **Example 1 · Firewall: numeric column**
 
@@ -2318,7 +2318,7 @@ Netscaler_Logs_CL
 
 #### 2.73 SQL vs KQL: string equality
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT * FROM Palo_FW_CL WHERE Action = 'deny'`
+SQL: `SELECT * FROM Palo_FW_CL WHERE Action = 'deny'`
 
 **Example 1 · Firewall**
 
@@ -2343,7 +2343,7 @@ Infoblox_DHCP_CL
 
 #### 2.74 SQL vs KQL: string substring (LIKE '%abc%')
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT * FROM Infoblox_DNS_CL WHERE DnsQuery LIKE '%microsoft%'`
+SQL: `SELECT * FROM Infoblox_DNS_CL WHERE DnsQuery LIKE '%microsoft%'`
 
 **Example 1 · DNS**
 
@@ -2368,7 +2368,7 @@ Netscaler_Logs_CL
 
 #### 2.75 SQL vs KQL: string wildcard (LIKE 'abc%')
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT * FROM Infoblox_DNS_CL WHERE DnsQuery LIKE 'login%'`
+SQL: `SELECT * FROM Infoblox_DNS_CL WHERE DnsQuery LIKE 'login%'`
 
 **Example 1 · DNS**
 
@@ -2393,7 +2393,7 @@ Infoblox_DHCP_CL
 
 #### 2.76 SQL vs KQL: date comparison, last 1 day
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT * FROM Palo_FW_CL WHERE TimeGenerated > GETDATE() - 1`
+SQL: `SELECT * FROM Palo_FW_CL WHERE TimeGenerated > GETDATE() - 1`
 
 **Example 1 · Firewall (static sample: returns data only while it is under a day old)**
 
@@ -2418,7 +2418,7 @@ Infoblox_DHCP_CL
 
 #### 2.77 SQL vs KQL: date range (BETWEEN)
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT * FROM Palo_FW_CL WHERE TimeGenerated BETWEEN '2026-11-16 20:02:00' AND '2026-11-16 20:02:10'`
+SQL: `SELECT * FROM Palo_FW_CL WHERE TimeGenerated BETWEEN '2026-11-16 20:02:00' AND '2026-11-16 20:02:10'`
 
 **Example 1 · Firewall**
 
@@ -2443,7 +2443,7 @@ Infoblox_DHCP_CL
 
 #### 2.78 SQL vs KQL: boolean comparison (WHERE NOT flag)
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT * FROM Palo_FW_CL WHERE NOT IsBlocked`
+SQL: `SELECT * FROM Palo_FW_CL WHERE NOT IsBlocked`
 
 **Example 1 · Firewall**
 
@@ -2471,7 +2471,7 @@ Infoblox_DHCP_CL
 
 #### 2.79 SQL vs KQL: sort (ORDER BY)
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT SrcIP, TimeGenerated FROM Palo_FW_CL ORDER BY TimeGenerated ASC`
+SQL: `SELECT SrcIP, TimeGenerated FROM Palo_FW_CL ORDER BY TimeGenerated ASC`
 
 **Example 1 · Firewall**
 
@@ -2499,7 +2499,7 @@ Netscaler_Logs_CL
 
 #### 2.80 SQL vs KQL: distinct (SELECT DISTINCT)
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT DISTINCT Action, Protocol FROM Palo_FW_CL`
+SQL: `SELECT DISTINCT Action, Protocol FROM Palo_FW_CL`
 
 **Example 1 · Firewall**
 
@@ -2524,7 +2524,7 @@ Netscaler_Logs_CL
 
 #### 2.81 SQL vs KQL: grouping and aggregation (GROUP BY)
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT SrcIP, AVG(BytesOut) FROM Palo_FW_CL GROUP BY SrcIP`
+SQL: `SELECT SrcIP, AVG(BytesOut) FROM Palo_FW_CL GROUP BY SrcIP`
 
 **Example 1 · Firewall**
 
@@ -2549,7 +2549,7 @@ Infoblox_DNS_CL
 
 #### 2.82 SQL vs KQL: column aliases and extend
 
-*01-KQL.pptx · slide 64* — SQL: `SELECT SrcIP AS Source, AVG(BytesOut) AS AvgOut FROM Palo_FW_CL GROUP BY SrcIP`
+SQL: `SELECT SrcIP AS Source, AVG(BytesOut) AS AvgOut FROM Palo_FW_CL GROUP BY SrcIP`
 
 **Example 1 · Firewall**
 
@@ -2578,14 +2578,14 @@ Infoblox_DNS_CL
 
 ---
 
-## Part 2 · 02-KQL.pptx (Using KQL)
+## Part 2 · Using KQL
 
 
-### 3. Filtering with KQL (slides 5–10)
+### 3. Filtering with KQL
 
 #### 3.1 Query construction flow: data, filter and prepare, analyze, present
 
-*02-KQL.pptx · slide 6* — Each stage reduces or reshapes the result; pivot back to refine.
+Each stage reduces or reshapes the result; pivot back to refine.
 
 **Example 1 · Firewall**
 
@@ -2616,7 +2616,7 @@ Netscaler_Logs_CL                          // Data
 
 #### 3.2 where: filter rows with a predicate, then count
 
-*02-KQL.pptx · slide 7* — Syntax: T | where Predicate.
+Syntax: T | where Predicate.
 
 **Example 1 · Firewall: how many blocked sessions per source?**
 
@@ -2644,7 +2644,7 @@ Infoblox_DHCP_CL
 
 #### 3.3 Predicate operators, strings (1/2): ==, has, contains
 
-*02-KQL.pptx · slide 7* — String comparisons.
+String comparisons.
 
 **Example 1 · == (exact)**
 
@@ -2669,7 +2669,7 @@ Netscaler_Logs_CL
 
 #### 3.4 Predicate operators, strings (2/2): !contains, startswith, endswith, matches regex
 
-*02-KQL.pptx · slide 7* — String comparisons.
+String comparisons.
 
 **Example 1 · !contains and startswith**
 
@@ -2694,7 +2694,7 @@ Palo_FW_CL
 
 #### 3.5 Predicate operators, numeric and date: ==, !=, <, >, <=, >=
 
-*02-KQL.pptx · slide 7* — Numbers are not quoted.
+Numbers are not quoted.
 
 **Example 1 · Equals and not equals**
 
@@ -2719,7 +2719,7 @@ Infoblox_DHCP_CL
 
 #### 3.6 Predicate operators, lookup: in, !in, has_any
 
-*02-KQL.pptx · slide 7* — Match against lists.
+Match against lists.
 
 **Example 1 · in**
 
@@ -2744,7 +2744,7 @@ Infoblox_DNS_CL
 
 #### 3.7 Combine predicates with and, or and not()
 
-*02-KQL.pptx · slide 7* — Use parentheses when mixing and with or.
+Use parentheses when mixing and with or.
 
 **Example 1 · and**
 
@@ -2769,7 +2769,7 @@ Infoblox_DNS_CL
 
 #### 3.8 where examples: time, conditions, case-insensitive match, lists and ipv4_is_match
 
-*02-KQL.pptx · slide 8* — The same building blocks on different tables.
+The same building blocks on different tables.
 
 **Example 1 · Time filter and a condition**
 
@@ -2797,7 +2797,7 @@ Netscaler_Logs_CL
 
 #### 3.9 Lab: filter on different columns
 
-*02-KQL.pptx · slides 9–10* — Pick the column that answers the question.
+Pick the column that answers the question.
 
 **Example 1 · Firewall zone**
 
@@ -2822,7 +2822,7 @@ Netscaler_Logs_CL
 
 #### 3.10 Lab: learn how to use predicate operators
 
-*02-KQL.pptx · slides 9–10* — Try several operators on the same column.
+Try several operators on the same column.
 
 **Example 1 · Exact**
 
@@ -2847,7 +2847,7 @@ Infoblox_DNS_CL
 
 #### 3.11 Lab: learn how to use lookups
 
-*02-KQL.pptx · slides 9–10* — Lookups with in, !in and has_any.
+Lookups with in, !in and has_any.
 
 **Example 1 · in**
 
@@ -2871,11 +2871,11 @@ Netscaler_Logs_CL
 ```
 
 
-### 4. Analyzing with KQL (slides 11–19)
+### 4. Analyzing with KQL
 
 #### 4.1 summarize syntax: T | summarize Aggregation [by Group Expression]
 
-*02-KQL.pptx · slide 12* — Produces a table that aggregates the input table.
+Produces a table that aggregates the input table.
 
 **Example 1 · Firewall**
 
@@ -2900,7 +2900,7 @@ Infoblox_DHCP_CL
 
 #### 4.2 Simple aggregation functions: count() and dcount()
 
-*02-KQL.pptx · slide 12* — Rows and distinct values.
+Rows and distinct values.
 
 **Example 1 · Firewall**
 
@@ -2925,7 +2925,7 @@ Netscaler_Logs_CL
 
 #### 4.3 Simple aggregation functions: sum() and avg()
 
-*02-KQL.pptx · slide 12* — Totals and averages of numeric columns.
+Totals and averages of numeric columns.
 
 **Example 1 · Firewall**
 
@@ -2952,7 +2952,7 @@ Infoblox_DNS_CL
 
 #### 4.4 Simple aggregation functions: min() and max()
 
-*02-KQL.pptx · slide 12* — Smallest and largest values.
+Smallest and largest values.
 
 **Example 1 · Firewall**
 
@@ -2977,7 +2977,7 @@ Netscaler_Logs_CL
 
 #### 4.5 Advanced functions: arg_min()
 
-*02-KQL.pptx · slide 12* — Return the row (or a column) with the smallest value.
+Return the row (or a column) with the smallest value.
 
 **Example 1 · Firewall: smallest session per source**
 
@@ -3004,7 +3004,7 @@ Netscaler_Logs_CL
 
 #### 4.6 Advanced functions: arg_max()
 
-*02-KQL.pptx · slide 12* — Return the row (or a column) with the largest value.
+Return the row (or a column) with the largest value.
 
 **Example 1 · Firewall: largest session per source**
 
@@ -3031,7 +3031,7 @@ Netscaler_Logs_CL
 
 #### 4.7 Advanced functions: make_list()
 
-*02-KQL.pptx · slide 12* — Collect values into an array.
+Collect values into an array.
 
 **Example 1 · Firewall destinations per source**
 
@@ -3060,7 +3060,7 @@ Infoblox_DHCP_CL
 
 #### 4.8 Advanced functions: countif()
 
-*02-KQL.pptx · slide 12* — Count only the rows that match a condition.
+Count only the rows that match a condition.
 
 **Example 1 · Firewall: blocked vs total**
 
@@ -3087,7 +3087,7 @@ Infoblox_DHCP_CL
 
 #### 4.9 summarize examples: distinct count by a group
 
-*02-KQL.pptx · slide 13* — Count distinct values of a column per group.
+Count distinct values of a column per group.
 
 **Example 1 · Firewall: distinct destinations per action**
 
@@ -3115,7 +3115,7 @@ Netscaler_Logs_CL
 
 #### 4.10 summarize examples: count by two columns
 
-*02-KQL.pptx · slide 13* — Group by a pair of columns.
+Group by a pair of columns.
 
 **Example 1 · Firewall: source and destination zone**
 
@@ -3143,7 +3143,7 @@ Infoblox_DHCP_CL
 
 #### 4.11 summarize examples: the default column name (use count = count() to override)
 
-*02-KQL.pptx · slide 13* — Note the default column name.
+Note the default column name.
 
 **Example 1 · Default count_**
 
@@ -3168,7 +3168,7 @@ Infoblox_DNS_CL
 
 #### 4.12 distinct: the shortcut for distinct combinations of columns
 
-*02-KQL.pptx · slide 14* — Syntax: T | distinct Column1, Column2.
+Syntax: T | distinct Column1, Column2.
 
 **Example 1 · Firewall**
 
@@ -3193,7 +3193,7 @@ Netscaler_Logs_CL
 
 #### 4.13 project: the shortcut to choose columns
 
-*02-KQL.pptx · slide 14* — Syntax: T | project ColumnName[=Expression].
+Syntax: T | project ColumnName[=Expression].
 
 **Example 1 · Firewall**
 
@@ -3218,7 +3218,7 @@ Netscaler_Logs_CL
 
 #### 4.14 arg_max(): the whole latest row per group
 
-*02-KQL.pptx · slide 15* — arg_max(TimeGenerated, *) returns every column of the latest row.
+arg_max(TimeGenerated, *) returns every column of the latest row.
 
 **Example 1 · Firewall: latest session per source**
 
@@ -3249,7 +3249,7 @@ Infoblox_DHCP_CL
 
 #### 4.15 arg_max(): one column of the latest row
 
-*02-KQL.pptx · slide 15* — arg_max(TimeGenerated, Column) returns just the columns you name.
+arg_max(TimeGenerated, Column) returns just the columns you name.
 
 **Example 1 · Firewall: last destination per source**
 
@@ -3275,7 +3275,7 @@ Netscaler_Logs_CL
 
 #### 4.16 arg_min(): the oldest row per group
 
-*02-KQL.pptx · slide 15* — Mirror image of arg_max.
+Mirror image of arg_max.
 
 **Example 1 · Firewall: first destination per source**
 
@@ -3301,7 +3301,7 @@ Infoblox_DHCP_CL
 
 #### 4.17 Filter out top or bottom rows: the last activity per key
 
-*02-KQL.pptx · slide 16* — Keep the latest row per entity, then filter on it.
+Keep the latest row per entity, then filter on it.
 
 **Example 1 · Firewall sources whose last action was a block**
 
@@ -3332,7 +3332,7 @@ Infoblox_DHCP_CL
 
 #### 4.18 summarize to prepare make_list(): duplicates are kept
 
-*02-KQL.pptx · slide 17* — Returns an array of all values in the group.
+Returns an array of all values in the group.
 
 **Example 1 · Firewall destinations**
 
@@ -3358,7 +3358,7 @@ Netscaler_Logs_CL
 
 #### 4.19 make_list() with distinct first: no duplicates
 
-*02-KQL.pptx · slide 17* — distinct before make_list removes duplicates.
+distinct before make_list removes duplicates.
 
 **Example 1 · Firewall: all blocked destination IPs in one list**
 
@@ -3389,7 +3389,7 @@ Netscaler_Logs_CL
 
 #### 4.20 make_set(): distinct values in an array
 
-*02-KQL.pptx · slide 18* — No duplicates, optional maximum size.
+No duplicates, optional maximum size.
 
 **Example 1 · Firewall: apps per source**
 
@@ -3414,7 +3414,7 @@ Infoblox_DHCP_CL
 
 #### 4.21 Lab: summarize by to get information about shares and connections
 
-*02-KQL.pptx · slide 19* — Connections and distinct peers per entity.
+Connections and distinct peers per entity.
 
 **Example 1 · Firewall: connections and distinct destinations per source**
 
@@ -3444,7 +3444,7 @@ Infoblox_DNS_CL
 
 #### 4.22 Lab: arg_max to find the most recent item
 
-*02-KQL.pptx · slide 19* — The most recent event of each kind.
+The most recent event of each kind.
 
 **Example 1 · Firewall: most recent event per rule**
 
@@ -3468,11 +3468,11 @@ Netscaler_Logs_CL
 ```
 
 
-### 5. Presenting with KQL (slides 20–23)
+### 5. Presenting with KQL
 
 #### 5.1 extend: calculated columns that are not stored
 
-*02-KQL.pptx · slide 21* — The new column is available in the following stages.
+The new column is available in the following stages.
 
 **Example 1 · Firewall**
 
@@ -3501,7 +3501,7 @@ Netscaler_Logs_CL
 
 #### 5.2 project-rename: change a column name
 
-*02-KQL.pptx · slide 21* — Use project-rename to rename without choosing columns.
+Use project-rename to rename without choosing columns.
 
 **Example 1 · Firewall**
 
@@ -3529,7 +3529,7 @@ Infoblox_DHCP_CL
 
 #### 5.3 bin(): time series buckets
 
-*02-KQL.pptx · slide 22* — bin(value, roundTo) groups values into buckets; use it in summarize.
+bin(value, roundTo) groups values into buckets; use it in summarize.
 
 **Example 1 · Firewall per 10 seconds**
 
@@ -3556,7 +3556,7 @@ Netscaler_Logs_CL
 
 #### 5.4 render timechart
 
-*02-KQL.pptx · slide 23* — Lines over time.
+Lines over time.
 
 **Example 1 · Firewall**
 
@@ -3584,7 +3584,7 @@ Netscaler_Logs_CL
 
 #### 5.5 render areachart
 
-*02-KQL.pptx · slide 23* — Stacked or filled areas over time.
+Stacked or filled areas over time.
 
 **Example 1 · Firewall by action**
 
@@ -3613,7 +3613,7 @@ Infoblox_DHCP_CL
 
 #### 5.6 render barchart
 
-*02-KQL.pptx · slide 23* — Horizontal bars for categories.
+Horizontal bars for categories.
 
 **Example 1 · Firewall sessions per application**
 
@@ -3645,7 +3645,7 @@ Netscaler_Logs_CL
 
 #### 5.7 render columnchart
 
-*02-KQL.pptx · slide 23* — Vertical columns for categories.
+Vertical columns for categories.
 
 **Example 1 · Firewall sessions per action**
 
@@ -3673,7 +3673,7 @@ Infoblox_DHCP_CL
 
 #### 5.8 render piechart
 
-*02-KQL.pptx · slide 23* — Share of a whole.
+Share of a whole.
 
 **Example 1 · Firewall protocol share**
 
@@ -3703,7 +3703,7 @@ Netscaler_Logs_CL
 
 #### 5.9 render scatterchart
 
-*02-KQL.pptx · slide 23* — Two numeric dimensions.
+Two numeric dimensions.
 
 **Example 1 · Firewall bytes in vs out per source**
 
@@ -3733,11 +3733,11 @@ Infoblox_DNS_CL
 ```
 
 
-### 6. Advanced KQL operations (slides 24–33)
+### 6. Advanced KQL operations
 
 #### 6.1 let: declare and reuse a variable (an IP)
 
-*02-KQL.pptx · slide 25* — The let statement ends with a semicolon.
+The let statement ends with a semicolon.
 
 **Example 1 · Activity from an IP in the firewall**
 
@@ -3770,7 +3770,7 @@ Infoblox_DHCP_CL
 
 #### 6.2 let: a lookback timespan and a name
 
-*02-KQL.pptx · slide 25* — Define the window and the entity once, reuse them.
+Define the window and the entity once, reuse them.
 
 **Example 1 · Firewall**
 
@@ -3807,7 +3807,7 @@ Netscaler_Logs_CL
 
 #### 6.3 let: a time value computed with ago()
 
-*02-KQL.pptx · slide 25* — let lookback = ago(7d) holds a datetime.
+let lookback = ago(7d) holds a datetime.
 
 **Example 1 · Firewall**
 
@@ -3844,7 +3844,7 @@ Infoblox_DNS_CL
 
 #### 6.4 let: declare a dynamic list with datatable
 
-*02-KQL.pptx · slide 26* — A one-field table can be used as a list.
+A one-field table can be used as a list.
 
 **Example 1 · Firewall: suspicious sources**
 
@@ -3872,7 +3872,7 @@ Netscaler_Logs_CL
 
 #### 6.5 let: declare a table 'view' that is the result of a query
 
-*02-KQL.pptx · slide 26* — LowActivity-style views.
+LowActivity-style views.
 
 **Example 1 · Firewall**
 
@@ -3907,7 +3907,7 @@ LowActivityHosts
 
 #### 6.6 JSON and arrays: todynamic()
 
-*02-KQL.pptx · slide 27* — Convert a string into a dynamic (JSON) value.
+Convert a string into a dynamic (JSON) value.
 
 **Example 1 · Firewall**
 
@@ -3941,7 +3941,7 @@ Infoblox_DHCP_CL
 
 #### 6.7 JSON and arrays: JsonField.Key and JsonField["Key"]
 
-*02-KQL.pptx · slide 27* — Two notations to refer to a field of a dynamic value.
+Two notations to refer to a field of a dynamic value.
 
 **Example 1 · Dot notation**
 
@@ -3972,7 +3972,7 @@ Netscaler_Logs_CL
 
 #### 6.8 JSON and arrays: mv-expand creates a row per array value
 
-*02-KQL.pptx · slide 27* — The easiest way to process arrays.
+The easiest way to process arrays.
 
 **Example 1 · Firewall: one row per destination**
 
@@ -4004,7 +4004,7 @@ Infoblox_DHCP_CL
 
 #### 6.9 JSON and arrays: mv-apply runs a query on each array value
 
-*02-KQL.pptx · slide 27* — mv-apply = mv-expand + a sub-query.
+mv-apply = mv-expand + a sub-query.
 
 **Example 1 · Firewall: count internal destinations per source**
 
@@ -4042,7 +4042,7 @@ Infoblox_DHCP_CL
 
 #### 6.10 JSON examples: promote dynamic properties to columns
 
-*02-KQL.pptx · slide 28* — The ExtendedProperties pattern: todynamic, then read keys.
+The ExtendedProperties pattern: todynamic, then read keys.
 
 **Example 1 · Firewall**
 
@@ -4077,7 +4077,7 @@ Netscaler_Logs_CL
 
 #### 6.11 JSON examples: mv-expand an entity list
 
-*02-KQL.pptx · slide 28* — One row per element of an array of entities.
+One row per element of an array of entities.
 
 **Example 1 · Firewall**
 
@@ -4110,7 +4110,7 @@ Netscaler_Logs_CL
 
 #### 6.12 JSON examples: mv-apply with where and extend
 
-*02-KQL.pptx · slide 28* — Filter the array elements and build a value from them.
+Filter the array elements and build a value from them.
 
 **Example 1 · Firewall**
 
@@ -4147,7 +4147,7 @@ Infoblox_DHCP_CL
 
 #### 6.13 Parsing JSON: parse_json() with an index and a property
 
-*02-KQL.pptx · slide 29* — parse_json(Entities)[0].Property style.
+parse_json(Entities)[0].Property style.
 
 **Example 1 · Firewall**
 
@@ -4184,7 +4184,7 @@ Infoblox_DHCP_CL
 
 #### 6.14 Parsing JSON: parse_json() with ["key"], then summarize
 
-*02-KQL.pptx · slide 29* — Parse, then group and order.
+Parse, then group and order.
 
 **Example 1 · Firewall**
 
@@ -4221,7 +4221,7 @@ Netscaler_Logs_CL
 
 #### 6.15 materialize(): cache a let result that is used more than once
 
-*02-KQL.pptx · slide 30* — Faster and consistent when the named result is referenced several times.
+Faster and consistent when the named result is referenced several times.
 
 **Example 1 · Firewall**
 
@@ -4256,7 +4256,7 @@ LowActivityHosts
 
 #### 6.16 union: rows of two or more tables
 
-*02-KQL.pptx · slide 31* — Takes two or more tables and returns the rows of all of them.
+Takes two or more tables and returns the rows of all of them.
 
 **Example 1 · Firewall and DNS stacked**
 
@@ -4283,7 +4283,7 @@ union withsource = SourceTable Infoblox_DHCP_CL, Netscaler_Logs_CL
 
 #### 6.17 union with a wildcard on the table name
 
-*02-KQL.pptx · slide 31* — Supports a wildcard to union multiple tables.
+Supports a wildcard to union multiple tables.
 
 **Example 1 · All Infoblox tables**
 
@@ -4310,7 +4310,7 @@ union withsource = SourceTable Netscaler*
 
 #### 6.18 join: merge rows of two tables on matching columns
 
-*02-KQL.pptx · slide 32* — Syntax: LeftTable | join [JoinParameters] (RightTable) on Attributes.
+Syntax: LeftTable | join [JoinParameters] (RightTable) on Attributes.
 
 **Example 1 · Firewall sessions with DNS activity from the same address**
 
@@ -4344,7 +4344,7 @@ Netscaler_Logs_CL
 
 #### 6.19 join examples: innerunique with $left and $right
 
-*02-KQL.pptx · slide 33* — Take a sample on the left, then join.
+Take a sample on the left, then join.
 
 **Example 1 · Firewall to DNS**
 
@@ -4381,7 +4381,7 @@ Netscaler_Logs_CL
 
 #### 6.20 join examples: a default join on a common column
 
-*02-KQL.pptx · slide 33* — Join on a column name that exists on both sides.
+Join on a column name that exists on both sides.
 
 **Example 1 · Firewall and DNS on a renamed column**
 
@@ -4418,7 +4418,7 @@ Infoblox_DNS_CL
 
 #### 6.21 join examples: kind=inner with a lookup-style table
 
-*02-KQL.pptx · slide 33* — Join to a summarized or reference table.
+Join to a summarized or reference table.
 
 **Example 1 · Firewall to a table of busiest sources**
 
@@ -4447,11 +4447,11 @@ Infoblox_DHCP_CL
 ```
 
 
-### 7. Optimizing queries (slides 34–45)
+### 7. Optimizing queries
 
 #### 7.1 Measuring query performance: keep test result sets small
 
-*02-KQL.pptx · slides 35–37* — Avoid tests that return more than 30K results; summarize or limit while testing. Check Query details for time and data scanned.
+Avoid tests that return more than 30K results; summarize or limit while testing. Check Query details for time and data scanned.
 
 **Example 1 · Count instead of returning rows**
 
@@ -4476,7 +4476,7 @@ Netscaler_Logs_CL
 
 #### 7.2 Cold data: each side of a join has its own TimeGenerated filter
 
-*02-KQL.pptx · slides 38–39* — Scope every sub-query.
+Scope every sub-query.
 
 **Example 1 · Firewall and DNS**
 
@@ -4507,7 +4507,7 @@ Netscaler_Logs_CL
 
 #### 7.3 Cold data: the same applies to union and let
 
-*02-KQL.pptx · slides 38–39* — Every branch of a union or let has a time filter.
+Every branch of a union or let has a time filter.
 
 **Example 1 · union with a filter per table**
 
@@ -4541,7 +4541,7 @@ RecentFw
 
 #### 7.4 Query optimization: start with filtering by time
 
-*02-KQL.pptx · slide 40* — Keep hot cache size in mind.
+Keep hot cache size in mind.
 
 **Example 1 · Firewall**
 
@@ -4569,7 +4569,7 @@ Netscaler_Logs_CL
 
 #### 7.5 Query optimization: filter fast, the less data for the next step the better
 
-*02-KQL.pptx · slide 41* — Filter before you count or summarize.
+Filter before you count or summarize.
 
 **Example 1 · has, then count**
 
@@ -4597,7 +4597,7 @@ Palo_FW_CL
 
 #### 7.6 Query optimization: use efficient operators
 
-*02-KQL.pptx · slide 42* — Equality first, then has / startswith; avoid contains and endswith unless needed. The full comparison per operator is in section 2 (slide 63).
+Equality first, then has / startswith; avoid contains and endswith unless needed. The full comparison per operator is in section 2.
 
 **Example 1 · Equality (best)**
 
@@ -4625,7 +4625,7 @@ Infoblox_DNS_CL
 
 #### 7.7 Query optimization: use native rather than calculated columns
 
-*02-KQL.pptx · slide 43* — Filter on the original column instead of an extended one.
+Filter on the original column instead of an extended one.
 
 **Example 1 · Native column**
 
@@ -4655,7 +4655,7 @@ Infoblox_DNS_CL
 
 #### 7.8 Query optimization: =~ instead of tolower() ==
 
-*02-KQL.pptx · slide 43* — Case-insensitive comparison without calculating a column.
+Case-insensitive comparison without calculating a column.
 
 **Example 1 · More typical: =~**
 
@@ -4683,7 +4683,7 @@ Infoblox_DNS_CL
 
 #### 7.9 Query optimization: filter every table, explicitly
 
-*02-KQL.pptx · slide 44* — Put the smaller, filtered table on the left side of a join.
+Put the smaller, filtered table on the left side of a join.
 
 **Example 1 · Filter left, then join a filtered right side**
 
@@ -4714,7 +4714,7 @@ Infoblox_DHCP_CL
 
 #### 7.10 Checklist, Filter: filter early
 
-*02-KQL.pptx · slide 45* — Start with a time filter and filter early.
+Start with a time filter and filter early.
 
 **Example 1 · Firewall**
 
@@ -4745,7 +4745,7 @@ Netscaler_Logs_CL
 
 #### 7.11 Checklist, Reduce: summarize early
 
-*02-KQL.pptx · slide 45* — Aggregate before you join or sort.
+Aggregate before you join or sort.
 
 **Example 1 · Firewall**
 
@@ -4774,7 +4774,7 @@ Infoblox_DHCP_CL
 
 #### 7.12 Checklist, Reduce: project explicitly
 
-*02-KQL.pptx · slide 45* — Keep only the columns you need (project-away is an alternative).
+Keep only the columns you need (project-away is an alternative).
 
 **Example 1 · project**
 
@@ -4803,7 +4803,7 @@ Infoblox_DHCP_CL
 
 #### 7.13 Checklist, Multiple tables: use the smaller table on the join left side
 
-*02-KQL.pptx · slide 45* — The left side should be the smaller one.
+The left side should be the smaller one.
 
 **Example 1 · Small filtered DNS client on the left**
 
@@ -4837,7 +4837,7 @@ Netscaler_Logs_CL
 
 #### 7.14 Checklist, Multiple tables: materialize
 
-*02-KQL.pptx · slide 45* — Cache a sub-result that is used several times.
+Cache a sub-result that is used several times.
 
 **Example 1 · Firewall**
 
@@ -4868,7 +4868,7 @@ Events
 
 #### 7.15 Checklist, Parse: use split, parse or extract_all instead of multiple extracts
 
-*02-KQL.pptx · slide 45* — One parse beats several extracts.
+One parse beats several extracts.
 
 **Example 1 · parse once**
 
